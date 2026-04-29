@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import API from '../api';
 
 export default function Login() {
@@ -38,6 +38,10 @@ export default function Login() {
         />
         <button type="submit" className="neon-btn">Login</button>
       </form>
+      <p style={{ textAlign: 'center', marginTop: 20, color: '#aaa' }}>
+        New User?{' '}
+        <Link to="/register" style={{ color: '#00ffc4', textDecoration: 'underline' }}>Register for free</Link>
+      </p>
     </div>
   );
 }

@@ -5,11 +5,11 @@ const router = express.Router();
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
-// Topic Extractor
+// ---------- Helpers ----------
 async function extractCoreTopic(rawInput) {
   try {
     const res = await groq.chat.completions.create({
-      model: 'mixtral-8x7b-32768',
+      model: 'llama-3.1-8b-instant',
       messages: [
         {
           role: 'system',
@@ -29,7 +29,6 @@ async function extractCoreTopic(rawInput) {
   }
 }
 
-// Safe JSON Extractor
 function extractJSON(text) {
   try {
     const match = text.match(/\{[\s\S]*\}/);
@@ -39,31 +38,22 @@ function extractJSON(text) {
   }
 }
 
-// Dynamic Fallback
-function buildFallback(topic) {
+// Fallback for single idea generation (deterministic based on topic)
+function buildSingleFallback(topic) {
   const t = topic.trim();
   const tLow = t.toLowerCase();
   const tTitle = t.replace(/\b\w/g, c => c.toUpperCase());
   const year = new Date().getFullYear();
-
   const hash = tLow.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
 
-  // Deterministic shuffle so same topic always gets same fallback, different topics get different picks
-  const shuffle = (arr) => {
+  const shuffle = (arr, seed) => {
     const a = [...arr];
-    let seed = hash;
-    const rand = () => {
-      seed = (seed * 1664525 + 1013904223) & 0xffffffff;
-      return (seed >>> 0) / 0xffffffff;
-    };
-    for (let i = a.length - 1; i > 0; i--) {
-      const j = Math.floor(rand() * (i + 1));
-      [a[i], a[j]] = [a[j], a[i]];
-    }
+    let s = seed;
+    const rand = () => { s = (s * 1664525 + 1013904223) & 0xffffffff; return (s >>> 0) / 0xffffffff; };
+    for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rand() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
     return a;
   };
 
-  // 30-item Idea Pool
   const ideaPool = [
     `I did ${t} every single day for 30 days — here is what nobody tells you`,
     `The biggest lie people believe about ${t} and what is actually true`,
@@ -97,7 +87,6 @@ function buildFallback(topic) {
     `How ${t} has changed in the last year and what it means for you right now`,
   ];
 
-  // 30-item Title Pool
   const titlePool = [
     `The ${tTitle} Truth Nobody Wants to Hear`,
     `I Tried ${tTitle} for 30 Days (Honest Results)`,
@@ -131,86 +120,130 @@ function buildFallback(topic) {
     `${tTitle} Deep Dive — Everything You Need in One Video`,
   ];
 
-  // 40-item Tag Pool
   const tagPool = [
-    tLow,
-    `${tLow} tips`,
-    `${tLow} for beginners`,
-    `how to ${tLow}`,
-    `${tLow} tutorial`,
-    `best ${tLow}`,
-    `${tLow} guide ${year}`,
-    `${tLow} mistakes`,
-    `${tLow} strategy`,
-    `learn ${tLow}`,
-    `${tLow} results`,
-    `${tLow} secrets`,
-    `${tLow} for intermediate`,
-    `${tLow} tips and tricks`,
-    `${tLow} step by step`,
-    `${tLow} complete guide`,
-    `${tLow} breakdown`,
-    `${tLow} hacks`,
-    `${tLow} basics`,
-    `${tLow} advanced`,
-    `${tLow} explained`,
-    `${tLow} journey`,
-    `start ${tLow}`,
-    `${tLow} growth`,
-    `${tLow} in ${year}`,
-    `${tLow} for content creators`,
-    `${tLow} challenge`,
-    `${tLow} transformation`,
-    `${tLow} from scratch`,
-    `${tLow} experience`,
-    `improve ${tLow}`,
-    `${tLow} deep dive`,
-    `${tLow} review`,
-    `${tLow} truth`,
-    `${tLow} motivation`,
-    `${tLow} niche`,
-    `${tLow} ideas`,
-    `${tLow} planning`,
-    `${tLow} workflow`,
-    `${tLow} consistency`,
+    tLow, `${tLow} tips`, `${tLow} for beginners`, `how to ${tLow}`, `${tLow} tutorial`, `best ${tLow}`,
+    `${tLow} guide ${year}`, `${tLow} mistakes`, `${tLow} strategy`, `learn ${tLow}`, `${tLow} results`,
+    `${tLow} secrets`, `${tLow} hacks`, `${tLow} explained`, `${tLow} advanced`, `${tLow} deep dive`,
+    `${tLow} challenge`, `${tLow} from scratch`, `${tLow} motivation`, `${tLow} ideas`,
   ];
 
-  // 12-item Description Pool
   const descPool = [
     `If you have been struggling with ${t}, this video is for you. I am skipping the recycled advice and sharing what I actually learned from doing it. The part most people skip is at the end — and it is the most important bit. Hit like if this helped and subscribe for more honest content about ${t}. Drop a comment with your biggest question right now.`,
     `Most ${t} content online skips the hard parts. Not this one. I walk you through everything — the wins, the failures, and what I would do differently. If you are serious about ${t}, bookmark this video. Subscribe to stay ahead and let me know in the comments where you are starting from.`,
     `${tTitle} does not have to be complicated — but most people make it harder than it needs to be. In this video I break down exactly what works and what does not. No sponsored opinions, no filler. Just real experience with ${t}. Like and subscribe if you want honest content like this every week.`,
     `Nobody talks about the real side of ${t}. I have been in the trenches, made the mistakes, and figured out what actually moves the needle. In this video I share it all — no gatekeeping. If this is the kind of honest ${t} content you have been looking for, hit subscribe and let's grow together.`,
-    `You have probably seen a hundred ${t} videos that all say the same thing. This is not one of them. I tested the most popular approaches, tracked the results, and I am sharing everything — what worked, what flopped, and what I would do differently. Save this video because you will want to come back to it.`,
-    `Starting with ${t} is overwhelming — I know because I was there. In this video I cut through the noise and give you only what matters. No fluff, no recycled tips from a Reddit thread. Just the stuff that made a real difference for me. Subscribe so you never miss an update as I document the whole journey.`,
-    `What if everything you have been told about ${t} is slightly wrong? After months of experimenting I found a better way — and in this video I walk you through it step by step. Whether you are just starting with ${t} or have been at it for a while, there is something here for you. Comment your biggest struggle below.`,
-    `I spent weeks researching the best way to approach ${t} so you do not have to. In this video I break down the exact framework I use, the mistakes I made early on, and the small changes that made the biggest difference. If ${t} is something you are serious about, this is the video to watch first.`,
-    `${tTitle} looks easy from the outside. It is not — and anyone who says otherwise is selling something. I am here to give you the honest version: what it actually takes, what most guides leave out, and how to make real progress without burning out. Drop a comment if you want more real talk about ${t}.`,
-    `The gap between people who succeed at ${t} and people who do not usually comes down to one or two key decisions. In this video I share what those are based on my own experience. If you are tired of generic ${t} advice that goes nowhere, this is the video you have been waiting for. Subscribe for more like this.`,
-    `After everything I have tried with ${t}, here is my honest take: the basics matter more than any hack or shortcut. In this video I strip everything back and show you the fundamentals that actually compound over time. Less noise, more signal. If that sounds like what you need for ${t}, you are in the right place.`,
-    `This video is for anyone who feels stuck with ${t}. I have been exactly where you are, and the thing that finally helped was not a new tool or strategy — it was a mindset shift. I break that down fully here. Let me know in the comments what part resonated most with you.`,
   ];
 
   return {
-    ideas: shuffle(ideaPool).slice(0, 5),
-    titles: shuffle(titlePool).slice(0, 5),
-    tags: shuffle(tagPool).slice(0, 10),
-    description: shuffle(descPool)[0],
+    ideas: shuffle(ideaPool, hash).slice(0, 5),
+    titles: shuffle(titlePool, hash).slice(0, 5),
+    tags: shuffle(tagPool, hash).slice(0, 10),
+    description: shuffle(descPool, hash)[0],
   };
 }
 
-// Route
+function buildCalendarFallback(topic) {
+  const days = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+  const formats = ['Tutorial','Vlog','Challenge','Review','Listicle','Q&A','Shorts'];
+  const tagSets = [
+    [topic.toLowerCase(), `${topic.toLowerCase()} tips`, 'how to', 'beginner guide', 'top ways'],
+    [`${topic.toLowerCase()} results`, 'my experience', 'honest review', 'truth about', 'no filter'],
+    [`${topic.toLowerCase()} mistakes`, 'what i learned', 'day in life', 'behind the scenes', 'raw footage'],
+    [`${topic.toLowerCase()} secrets`, 'expert advice', 'pro tips', 'advanced guide', 'strategy'],
+    [`${topic.toLowerCase()} challenge`, 'trying for 7 days', 'real results', 'what happened', 'honest'],
+    [`${topic.toLowerCase()} q&a`, 'answering questions', 'live chat', 'community', 'ask me'],
+    [`${topic.toLowerCase()} shorts`, 'viral clip', 'quick tip', '60 second guide', 'must watch'],
+  ];
+  const hash = topic.toLowerCase().split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
+  const shuffle = (arr, seed) => {
+    const a = [...arr];
+    let s = seed;
+    const rand = () => { s = (s * 1664525 + 1013904223) & 0xffffffff; return (s >>> 0) / 0xffffffff; };
+    for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rand() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+    return a;
+  };
+  const t = topic.trim();
+  return days.map((day, i) => {
+    const idx = (hash + i) % formats.length;
+    return {
+      day,
+      topic: t + (i === 0 ? ' – The Honest Start' : i === 1 ? ' – Behind the Scenes' : i === 2 ? ' – Testing the Hype' : i === 3 ? ' – Expert Breakdown' : i === 4 ? ' – Real Results' : i === 5 ? ' – Live Q&A' : ' – Quick Hit'),
+      title: `${i+1}. ${t} ${['Secrets Nobody Talks About','Myths Busted','Step‑by‑Step Guide','Honest Review','7‑Day Experiment','Your Questions Answered','Fast Challenge'][i]}`,
+      format: formats[idx],
+      description: `Day ${i+1} of ${t}. We dive into something new and actionable. Don't miss the twist at the end. Hit subscribe for daily drops.`,
+      tags: tagSets[i % tagSets.length],
+      thumbnailConcept: i % 2 === 0 ? 'Shocked face + red arrow' : 'Calm thumb + neon text overlay',
+    };
+  });
+}
+
+// ---------- Route ----------
 router.post('/', auth, async (req, res) => {
-  const { topic: rawTopic } = req.body;
+  const { topic: rawTopic, type } = req.body;
   if (!rawTopic) return res.status(400).json({ error: 'Topic is required' });
 
   const topic = await extractCoreTopic(rawTopic);
 
+  // ---------- Calendar mode ----------
+  if (type === 'calendar') {
+    const calendarPrompt = `
+Act as a senior YouTube content strategist and world-class social media marketer.
+Your task is to create a **7‑day YouTube content calendar** for the niche: "${topic}".
+
+Requirements:
+- The calendar must cover one week (Monday to Sunday). Provide a plan for each day.
+- For each day, generate:
+  1. **Video Topic / Idea** – A clear, creative video concept that fits the niche.
+  2. **Video Title** – SEO‑optimised, clickable, and different from any other day.
+  3. **Format** – e.g., Tutorial, Vlog, Challenge, Review, Listicle, Behind‑the‑Scenes, Q&A, Reaction, Shorts / Vertical.
+  4. **Description** – A short description (2-3 lines) that includes a hook, what the viewer will learn, and a natural call‑to‑action.
+  5. **Tags** – 5 specific, niche‑relevant tags.
+  6. **Thumbnail Concept** – A short idea for the thumbnail (text overlay, facial expression, props, colours) that would attract clicks.
+
+- The tone and style should feel fresh, native to YouTube, and specific to the "${topic}" audience.
+- Use very simple, commonly used English. No marketing fluff.
+
+Return ONLY a raw JSON object (no Markdown) with the following structure:
+{
+  "calendar": [
+    {
+      "day": "Monday",
+      "topic": "...",
+      "title": "...",
+      "format": "...",
+      "description": "...",
+      "tags": ["...","..."],
+      "thumbnailConcept": "..."
+    },
+    ... (repeat for all 7 days)
+  ]
+}
+`.trim();
+
+    try {
+      const completion = await groq.chat.completions.create({
+        model: 'llama-3.3-70b-versatile',
+        messages: [{ role: 'user', content: calendarPrompt }],
+        temperature: 1.0,
+        max_tokens: 1500,
+      });
+      const parsed = extractJSON(completion.choices[0]?.message?.content);
+      if (parsed?.calendar && parsed.calendar.length === 7) {
+        return res.json({ calendar: parsed.calendar, _resolvedTopic: topic });
+      }
+      throw new Error('Calendar parse failed');
+    } catch (err) {
+      console.error('Calendar generation failed, using fallback:', err);
+      const fallbackCalendar = buildCalendarFallback(topic);
+      return res.json({ calendar: fallbackCalendar, _resolvedTopic: topic });
+    }
+  }
+
+  // ---------- Original single generation ----------
   try {
     const [ideasRes, titlesRes, tagsRes, descRes] = await Promise.all([
-
       groq.chat.completions.create({
-        model: 'mixtral-8x7b-32768',
+        model: 'llama-3.3-70b-versatile',
         messages: [{
           role: 'user',
           content: `You are a YouTube strategist. The niche is: "${topic}"
@@ -229,9 +262,8 @@ router.post('/', auth, async (req, res) => {
         temperature: 1.3,
         max_tokens: 500,
       }),
-
       groq.chat.completions.create({
-        model: 'mixtral-8x7b-32768',
+        model: 'llama-3.3-70b-versatile',
         messages: [{
           role: 'user',
           content: `You are a YouTube SEO expert. The niche is: "${topic}"
@@ -249,9 +281,8 @@ router.post('/', auth, async (req, res) => {
         temperature: 1.3,
         max_tokens: 400,
       }),
-
       groq.chat.completions.create({
-        model: 'mixtral-8x7b-32768',
+        model: 'llama-3.3-70b-versatile',
         messages: [{
           role: 'user',
           content: `You are a YouTube SEO specialist. The niche is: "${topic}"
@@ -266,14 +297,13 @@ router.post('/', auth, async (req, res) => {
           No generic tags like "youtube", "video", "viral", "content". Every tag must be meaningful for "${topic}" specifically.
 
           Return ONLY this JSON with no extra text:
-          { "tags": ["...", "...", "...", "...", "...", "...", "...", "...", "...", "..."] }`,
+          { "tags": ["...", "...", ...] }`,
         }],
         temperature: 1.1,
         max_tokens: 300,
       }),
-
       groq.chat.completions.create({
-        model: 'mixtral-8x7b-32768',
+        model: 'llama-3.3-70b-versatile',
         messages: [{
           role: 'user',
           content: `Write a YouTube video description for a video about "${topic}".
@@ -291,7 +321,6 @@ router.post('/', auth, async (req, res) => {
         temperature: 1.2,
         max_tokens: 300,
       }),
-
     ]);
 
     const ideas = extractJSON(ideasRes.choices[0]?.message?.content);
@@ -310,11 +339,10 @@ router.post('/', auth, async (req, res) => {
       description: desc.description,
       _resolvedTopic: topic,
     });
-
   } catch (err) {
     console.error('Groq error — using dynamic fallback:', err.message);
     return res.json({
-      ...buildFallback(topic),
+      ...buildSingleFallback(topic),
       _resolvedTopic: topic,
     });
   }

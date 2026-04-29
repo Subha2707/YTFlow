@@ -8,17 +8,25 @@ export default function Planner() {
   const [topic, setTopic] = useState('');
   const [loading, setLoading] = useState(false);
   const [generated, setGenerated] = useState(null);
+  const [calendar, setCalendar] = useState(null);
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [isCalendarMode, setIsCalendarMode] = useState(false);
 
   const handleGenerate = async () => {
     if (!topic.trim()) return alert('Enter a topic');
     setLoading(true);
     setGenerated(null);
+    setCalendar(null);
     setSaveSuccess(false);
     try {
-      const res = await API.post('/generate', { topic });
-      // Backend returns { ideas, titles, tags, description }
-      setGenerated(res.data);
+      const payload = { topic };
+      if (isCalendarMode) payload.type = 'calendar';
+      const res = await API.post('/generate', payload);
+      if (isCalendarMode) {
+        setCalendar(res.data.calendar);
+      } else {
+        setGenerated(res.data);
+      }
     } catch (err) {
       alert('Generation failed. Check backend logs.');
       console.error(err);
@@ -28,9 +36,10 @@ export default function Planner() {
   };
 
   const handleSave = async () => {
-    if (!generated) return;
+    const contentToSave = isCalendarMode ? { calendar } : generated;
+    if (!contentToSave || (isCalendarMode && !calendar) || (!isCalendarMode && !generated)) return;
     try {
-      await API.post('/plans', { topic, generatedContent: generated });
+      await API.post('/plans', { topic, generatedContent: contentToSave });
       setSaveSuccess(true);
     // eslint-disable-next-line no-unused-vars
     } catch (err) {
@@ -41,18 +50,57 @@ export default function Planner() {
   return (
     <div className="planner page-transition">
       <h2 className="neon-text">AI Content Planner</h2>
+
+      {/* Mode toggle */}
+      <div style={{ marginBottom: 16, textAlign: 'center' }}>
+        <button
+          className={`neon-btn ${isCalendarMode ? 'active' : ''}`}
+          onClick={() => setIsCalendarMode(!isCalendarMode)}
+          style={{ marginRight: 16 }}
+        >
+          {isCalendarMode ? 'Calendar Mode ✓' : 'Switch to Calendar'}
+        </button>
+      </div>
+
       <textarea
-        placeholder="e.g., 'Top 10 JavaScript tips for beginners' or 'Minecraft survival guide'"
+        placeholder="e.g., 'Top 10 JavaScript tips' or 'Indian food cooking channel'"
         value={topic}
         onChange={(e) => setTopic(e.target.value)}
       />
       <button onClick={handleGenerate} className="neon-btn">
-        {loading ? 'Generating...' : 'Generate Plan'}
+        {loading ? 'Generating...' : isCalendarMode ? 'Generate 7‑Day Calendar' : 'Generate Plan'}
       </button>
 
       {loading && <Loader />}
 
-      {generated && (
+      {/* Calendar Output */}
+      {calendar && isCalendarMode && (
+        <div className="calendar-container glass-card">
+          <h3 className="neon-text">📅 7‑Day YouTube Content Calendar</h3>
+          <div className="calendar-grid">
+            {calendar.map((day, idx) => (
+              <div key={idx} className="calendar-day-card">
+                <h4 className="day-title">{day.day}</h4>
+                <p><strong>Topic:</strong> {day.topic}</p>
+                <p><strong>Title:</strong> {day.title}</p>
+                <p><strong>Format:</strong> {day.format}</p>
+                <p><strong>Description:</strong> {day.description}</p>
+                <div className="tags">
+                  {day.tags.map((tag, i) => <span className="tag" key={i}>{tag}</span>)}
+                </div>
+                <p><strong>Thumbnail:</strong> {day.thumbnailConcept}</p>
+              </div>
+            ))}
+          </div>
+          <button onClick={handleSave} className="neon-btn" style={{ marginTop: 20 }}>
+            Save Calendar
+          </button>
+          {saveSuccess && <p style={{ color: '#00ffc4', marginTop: 10 }}>✓ Calendar saved!</p>}
+        </div>
+      )}
+
+      {/* Single Plan Output (ideas, titles, tags, description) */}
+      {generated && !isCalendarMode && (
         <div className="results-container glass-card">
           <div className="result-section">
             <h3>💡 Video Ideas</h3>

@@ -18,6 +18,7 @@ export default function Navbar() {
             <Link to="/dashboard">Dashboard</Link>
             <Link to="/planner">Planner</Link>
             <Link to="/saved">Saved Plans</Link>
+            <Link to="/analytics">Analytics</Link>
             <button onClick={handleLogout} className="nav-logout">Logout</button>
           </>
         ) : (

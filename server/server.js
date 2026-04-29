@@ -6,6 +6,8 @@ const cors = require('cors');
 const authRoutes = require('./routes/auth');
 const generateRoutes = require('./routes/generate');
 const plansRoutes = require('./routes/plans');
+const analyticsRoutes = require('./routes/analytics');
+
 
 const app = express();
 
@@ -22,6 +24,7 @@ mongoose.connect(process.env.MONGO_URI)
 app.use('/api/auth', authRoutes);
 app.use('/api/generate', generateRoutes);
 app.use('/api/plans', plansRoutes);
+app.use('/api/analytics', analyticsRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

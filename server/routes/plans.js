@@ -28,4 +28,26 @@ router.get('/', auth, async (req, res) => {
   }
 });
 
+// Get single plan
+router.get('/:id', auth, async (req, res) => {
+  try {
+    const plan = await Plan.findOne({ _id: req.params.id, userId: req.userId });
+    if (!plan) return res.status(404).json({ error: 'Plan not found' });
+    res.json(plan);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch plan' });
+  }
+});
+
+// Delete a plan
+router.delete('/:id', auth, async (req, res) => {
+  try {
+    const plan = await Plan.findOneAndDelete({ _id: req.params.id, userId: req.userId });
+    if (!plan) return res.status(404).json({ error: 'Plan not found' });
+    res.json({ message: 'Plan deleted' });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to delete plan' });
+  }
+});
+
 module.exports = router;
