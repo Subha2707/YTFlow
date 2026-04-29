@@ -1,0 +1,30 @@
+# Dependencies
+node_modules/
+
+# Environment variables (API keys, secrets)
+.env
+.env.local
+.env.*.local
+
+# Build output
+client/dist
+server/dist
+
+# Vite cache
+.vite
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# MongoDB data (if any local dump)
+/data/
