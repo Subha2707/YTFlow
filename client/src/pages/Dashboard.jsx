@@ -44,7 +44,7 @@ export default function Dashboard() {
     <div className="dashboard page-transition">
       {/* Welcome */}
       <div className="dashboard-welcome glass-card">
-        <h2>Welcome back, <span className="neon-text">{username}</span></h2>
+        <h2>Welcome, <span className="neon-text">{username}</span></h2>
         <p>Here's your content strategy overview</p>
       </div>
 

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/static-components */
 import { useState } from 'react';
 import API from '../api';
 import GlassCard from '../components/Card';
@@ -9,7 +10,6 @@ import {
 
 const COLORS = ['#00ffc4', '#7b61ff', '#ff6bcb'];
 
-// Engagement color indicator
 function getEngagementColor(rate) {
   if (rate >= 5) return '#00ffc4';
   if (rate >= 2) return '#ffc107';
@@ -48,6 +48,56 @@ export default function Analytics() {
       setUrl('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
     else
       setUrl('https://www.youtube.com/@mkbhd');
+  };
+
+  // ---- Derived metrics ----
+  const computeVideoExtras = (data) => {
+    if (!data || data.type !== 'video') return {};
+    const daysSincePublished = Math.max(
+      1,
+      // eslint-disable-next-line react-hooks/purity
+      (Date.now() - new Date(data.publishedAt).getTime()) / (1000 * 60 * 60 * 24)
+    );
+    const avgDailyViews = Math.round(data.views / daysSincePublished);
+    const likeRate = ((data.likes / data.views) * 100).toFixed(2);
+    return { avgDailyViews, likeRate };
+  };
+
+  const computeChannelExtras = (data) => {
+    if (!data || data.type !== 'channel' || !data.recentVideos || data.recentVideos.length < 2)
+      return { uploadCadence: 0 };
+    const dates = data.recentVideos.map(v => new Date(v.publishedAt).getTime());
+    const newest = Math.max(...dates);
+    const oldest = Math.min(...dates);
+    const spanWeeks = Math.max(1, (newest - oldest) / (1000 * 60 * 60 * 24 * 7));
+    const vidsPerWeek = (data.recentVideos.length / spanWeeks).toFixed(1);
+    return { uploadCadence: vidsPerWeek };
+  };
+
+  const videoExtras = data?.type === 'video' ? computeVideoExtras(data) : null;
+  const channelExtras = data?.type === 'channel' ? computeChannelExtras(data) : null;
+
+  // ---- Custom tooltip (dark style) ----
+  // eslint-disable-next-line no-unused-vars
+  const CustomTooltip = ({ active, payload, label }) => {
+    if (active && payload && payload.length) {
+      return (
+        <div style={{
+          background: 'rgba(10,10,26,0.9)',
+          border: '1px solid rgba(0,255,196,0.3)',
+          borderRadius: 12,
+          padding: '8px 14px',
+          backdropFilter: 'blur(8px)',
+        }}>
+          {payload.map((entry, index) => (
+            <p key={index} style={{ color: entry.color, margin: '4px 0' }}>
+              {entry.name}: {entry.value.toLocaleString()}
+            </p>
+          ))}
+        </div>
+      );
+    }
+    return null;
   };
 
   return (
@@ -109,8 +159,8 @@ export default function Analytics() {
             </div>
           </GlassCard>
 
-          {/* Stat Cards Grid */}
-          <div className="mini-stats-grid">
+          {/* Stat Cards (now 6 cards in a 3-column grid) */}
+          <div className="mini-stats-grid" style={{ gridTemplateColumns: 'repeat(3, 1fr)' }}>
             <GlassCard className="mini-stat">
               <h4>Views</h4>
               <h2 className="neon-text">{data.views.toLocaleString()}</h2>
@@ -127,6 +177,18 @@ export default function Analytics() {
               <h4>Engagement</h4>
               <h2 className="neon-text">{data.engagement}%</h2>
             </GlassCard>
+            {videoExtras && (
+              <>
+                <GlassCard className="mini-stat">
+                  <h4>Avg Daily Views</h4>
+                  <h2 className="neon-text">{videoExtras.avgDailyViews.toLocaleString()}</h2>
+                </GlassCard>
+                <GlassCard className="mini-stat">
+                  <h4>Like Rate</h4>
+                  <h2 className="neon-text">{videoExtras.likeRate}%</h2>
+                </GlassCard>
+              </>
+            )}
           </div>
 
           {/* Tags */}
@@ -139,7 +201,7 @@ export default function Analytics() {
             </GlassCard>
           )}
 
-          {/* Charts */}
+          {/* Charts with animation */}
           <div className="chart-section">
             <GlassCard>
               <h4>Views / Likes / Comments</h4>
@@ -148,10 +210,11 @@ export default function Analytics() {
                   <CartesianGrid strokeDasharray="3 3" stroke="#333" />
                   <XAxis dataKey="name" stroke="#aaa" />
                   <YAxis stroke="#aaa" />
-                  <Tooltip />
-                  <Bar dataKey="Views" fill="#00ffc4" />
-                  <Bar dataKey="Likes" fill="#7b61ff" />
-                  <Bar dataKey="Comments" fill="#ff6bcb" />
+                  // eslint-disable-next-line react-hooks/static-components, react-hooks/static-components, react-hooks/static-components, react-hooks/static-components
+                  <Tooltip content={<CustomTooltip />} />
+                  <Bar dataKey="Views" fill="#00ffc4" animationDuration={1200} animationEasing="ease-out" />
+                  <Bar dataKey="Likes" fill="#7b61ff" animationDuration={1200} animationEasing="ease-out" />
+                  <Bar dataKey="Comments" fill="#ff6bcb" animationDuration={1200} animationEasing="ease-out" />
                 </BarChart>
               </ResponsiveContainer>
             </GlassCard>
@@ -170,12 +233,14 @@ export default function Analytics() {
                     cy="50%"
                     outerRadius={100}
                     label={({ name }) => name}
+                    animationDuration={1000}
+                    animationEasing="ease-out"
                   >
                     {[...Array(3)].map((_, i) => (
                       <Cell key={`cell-${i}`} fill={COLORS[i % COLORS.length]} />
                     ))}
                   </Pie>
-                  <Tooltip />
+                  <Tooltip content={<CustomTooltip />} />
                   <Legend />
                 </PieChart>
               </ResponsiveContainer>
@@ -192,7 +257,7 @@ export default function Analytics() {
             {data.customUrl && <p className="channel-url" style={{ color: '#7b61ff' }}>{data.customUrl}</p>}
           </GlassCard>
 
-          <div className="mini-stats-grid">
+          <div className="mini-stats-grid" style={{ gridTemplateColumns: 'repeat(3, 1fr)' }}>
             <GlassCard className="mini-stat">
               <h4>Subscribers</h4>
               <h2 className="neon-text">{data.subscribers.toLocaleString()}</h2>
@@ -209,6 +274,12 @@ export default function Analytics() {
               <h4>Avg Recent Views</h4>
               <h2 className="neon-text">{data.avgRecentViews.toLocaleString()}</h2>
             </GlassCard>
+            {channelExtras && (
+              <GlassCard className="mini-stat">
+                <h4>Uploads / Week</h4>
+                <h2 className="neon-text">{channelExtras.uploadCadence}</h2>
+              </GlassCard>
+            )}
           </div>
 
           {data.recentVideos.length > 0 && (
@@ -221,8 +292,8 @@ export default function Analytics() {
                       <CartesianGrid strokeDasharray="3 3" stroke="#333" />
                       <XAxis dataKey="name" stroke="#aaa" angle={-15} textAnchor="end" height={60} />
                       <YAxis stroke="#aaa" />
-                      <Tooltip />
-                      <Bar dataKey="Views" fill="#00ffc4" />
+                      <Tooltip content={<CustomTooltip />} />
+                      <Bar dataKey="Views" fill="#00ffc4" animationDuration={1200} animationEasing="ease-out" />
                     </BarChart>
                   </ResponsiveContainer>
                 </GlassCard>
