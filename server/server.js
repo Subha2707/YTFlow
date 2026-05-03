@@ -12,15 +12,13 @@ const app = express();
 
 // Middleware
 app.use(cors({
-  origin: [
-    'http://localhost:5173',
-    'http://localhost:3000',
-    'https://ytflow-app.netlify.app' 
-  ],
-  credentials: true,
+  origin: 'https://ytflow-app.netlify.app',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
 }));
+
+app.options('*', cors());
 
 app.use(express.json());
 
