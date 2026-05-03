@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import API from '../api';
 import GlassCard from '../components/Card';
+import { FaCalendarAlt, FaFileAlt } from 'react-icons/fa';
 
 export default function SavedPlans() {
   const [plans, setPlans] = useState([]);
@@ -51,7 +52,15 @@ export default function SavedPlans() {
               <div className="saved-plan-info">
                 <h4 className="plan-topic-name">{plan.topic}</h4>
                 <p className="plan-date">
-                  {new Date(plan.createdAt).toLocaleDateString()} – {isCalendar(plan) ? '📅 7‑Day Calendar' : '📝 Single Plan'}
+                  {new Date(plan.createdAt).toLocaleDateString()} – {isCalendar(plan) ?(
+                    <>
+                      <FaCalendarAlt/> 7-Day Calendar
+                    </>
+                  ): (
+                    <>
+                      <FaFileAlt/> Single Plan
+                    </>
+                  )}
                 </p>
               </div>
               <div className="saved-plan-actions">
