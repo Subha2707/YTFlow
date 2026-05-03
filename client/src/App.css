@@ -1760,3 +1760,141 @@ button:hover svg {
     width: 100%;
   }
 }
+/* ================= DASHBOARD RESPONSIVE ================= */
+
+/* Tablet */
+@media (max-width: 1024px) {
+  .dashboard {
+    padding: 24px;
+  }
+
+  .dashboard-grid-2col {
+    grid-template-columns: 1fr;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .dashboard {
+    padding: 16px;
+  }
+
+  .dashboard-welcome h2 {
+    font-size: 1.5rem;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .stat-card {
+    padding: 20px;
+  }
+
+  .quick-actions-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .action-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .recent-plans-list li {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+}
+
+/* Small Mobile */
+@media (max-width: 480px) {
+  .dashboard-welcome {
+    padding: 20px;
+  }
+
+  .dashboard-welcome h2 {
+    font-size: 1.3rem;
+  }
+
+  .stat-card h3 {
+    font-size: 1.2rem;
+  }
+}
+
+/* ================= ANALYTICS RESPONSIVE ================= */
+
+/* Tablet */
+@media (max-width: 1024px) {
+  .analytics-page {
+    padding: 0 16px;
+  }
+
+  .mini-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .chart-section {
+    grid-template-columns: 1fr;
+  }
+
+  .video-summary-card {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .video-thumb {
+    width: 100%;
+    max-width: 320px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .analytics-input-wrap {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .analytics-input-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .analytics-input-actions button {
+    flex: 1;
+  }
+
+  .mini-stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .video-meta h3 {
+    font-size: 1.1rem;
+  }
+
+  .video-meta {
+    text-align: center;
+  }
+}
+
+/* Small Mobile */
+@media (max-width: 480px) {
+  .analytics-page h2 {
+    font-size: 1.4rem;
+  }
+
+  .analytics-input {
+    font-size: 0.9rem;
+    padding: 12px;
+  }
+
+  .mini-stat h2 {
+    font-size: 1.5rem;
+  }
+}
