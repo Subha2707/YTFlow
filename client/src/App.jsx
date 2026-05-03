@@ -2,6 +2,8 @@ import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import ProtectedRoute from './components/ProtectedRoute';
+
+
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -10,6 +12,16 @@ import Planner from './pages/Planner';
 import SavedPlans from './pages/SavedPlans';
 import PlanDetail from './pages/PlanDetail';
 import Analytics from './pages/Analytics';
+import Features from './pages/Features';
+import HowItWorks from './pages/HowItWorks';
+import Tutorials from './pages/Tutorials';
+import Blog from './pages/Blog';
+import BlogDetail from './pages/BlogDetail';
+import Contact from './pages/Contact';
+import FAQ from './pages/FAQ';
+
+
+import Footer from './components/Footer';
 
 function AutoLogout() {
   const navigate = useNavigate();
@@ -53,7 +65,15 @@ export default function App() {
         <Route path="/saved" element={<ProtectedRoute><SavedPlans /></ProtectedRoute>} />
         <Route path="/plans/:id" element={<ProtectedRoute><PlanDetail /></ProtectedRoute>} />
         <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
+        <Route path="/features" element={<Features />} />
+        <Route path="/how-it-works" element={<HowItWorks />} />
+        <Route path="/tutorials" element={<Tutorials />} />
+        <Route path="/blog" element={<Blog />} />
+        <Route path="/blog/:slug" element={<BlogDetail />} />
+        <Route path="/contact" element={<Contact/>}/>
+        <Route path="/faq" element={<FAQ/>}/>
       </Routes>
+      <Footer/>
     </BrowserRouter>
   );
 }
