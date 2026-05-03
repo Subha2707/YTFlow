@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { IoIosCreate, IoIosSave } from "react-icons/io";
+import { MdAnalytics } from 'react-icons/md';
+import { FaCalendarAlt,FaLightbulb } from "react-icons/fa";
 import API from '../api';
 import GlassCard from '../components/Card';
 
@@ -95,20 +98,22 @@ export default function Dashboard() {
           <h4 className="neon-text">Quick Actions</h4>
           <div className="quick-actions-grid">
             <Link to="/planner" className="neon-btn action-btn">
-              ✨ Create New Plan
+              <IoIosCreate/> Create New Plan
             </Link>
             <Link to="/analytics" className="neon-btn action-btn" style={{ borderColor: '#7b61ff', color: '#7b61ff' }}
               onMouseEnter={e => { e.target.style.background = '#7b61ff'; e.target.style.color = 'white'; }}
               onMouseLeave={e => { e.target.style.background = ''; e.target.style.color = '#7b61ff'; }}>
-              📊 Analytics
+              <MdAnalytics/> Analytics
             </Link>
-            <Link to="/saved" className="neon-btn action-btn">
-              📁 Saved Plans
+            <Link to="/saved" className="neon-btn action-btn" style={{ borderColor: '#ffda03', color: '#ffda03' }}
+              onMouseEnter={e => { e.target.style.background = '#ffda03'; e.target.style.color = 'white'; }}
+              onMouseLeave={e => { e.target.style.background = ''; e.target.style.color = '#ffda03'; }}>
+              <IoIosSave/> Saved Plans
             </Link>
             <Link to="/planner" className="neon-btn action-btn" style={{ borderColor: '#ff6bcb', color: '#ff6bcb' }}
               onMouseEnter={e => { e.target.style.background = '#ff6bcb'; e.target.style.color = 'white'; }}
               onMouseLeave={e => { e.target.style.background = ''; e.target.style.color = '#ff6bcb'; }}>
-              🗓️ Calendar
+              <FaCalendarAlt/> Calendar
             </Link>
           </div>
         </GlassCard>
@@ -116,7 +121,7 @@ export default function Dashboard() {
 
       {/* Inspiration / Tips */}
       <GlassCard className="tips-card">
-        <h4 className="neon-text">💡 Content Tip</h4>
+        <h4 className="neon-text"><FaLightbulb/> Content Tip</h4>
         <p>"Consistency beats perfection. Use the Planner to generate ideas in bulk and schedule them weekly."</p>
       </GlassCard>
     </div>
