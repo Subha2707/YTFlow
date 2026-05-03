@@ -10,33 +10,28 @@ const analyticsRoutes = require('./routes/analytics');
 
 const app = express();
 
-// CORS - Allow all origins during debugging
-app.use(cors());
+// Middleware
+app.use(cors({
+  origin: [
+    'http://localhost:5173',
+    'http://localhost:3000',
+    'https://ytflow.netlify.app/' 
+  ],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
 app.use(express.json());
 
-// MongoDB connection with retry
-const connectDB = async () => {
-  try {
-    await mongoose.connect(process.env.MONGO_URI, {
-      serverSelectionTimeoutMS: 5000,
-      retryWrites: true
-    });
-    console.log('MongoDB connected successfully');
-  } catch (err) {
-    console.error('MongoDB connection error:', err.message);
-    // Don't crash the server - let it run without DB
-    console.log('Server will continue without database connection');
-  }
-};
-connectDB();
+// Connect to MongoDB
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log('MongoDB connected'))
+  .catch(err => console.error('MongoDB connection error:', err));
 
-// Health check
+// Health check route
 app.get('/api/health', (req, res) => {
-  res.json({
-    status: 'ok',
-    mongoState: mongoose.connection.readyState,
-    timestamp: new Date().toISOString()
-  });
+  res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
 // Routes
@@ -44,12 +39,6 @@ app.use('/api/auth', authRoutes);
 app.use('/api/generate', generateRoutes);
 app.use('/api/plans', plansRoutes);
 app.use('/api/analytics', analyticsRoutes);
-
-// Global error handler
-app.use((err, req, res, next) => {
-  console.error('Server Error:', err);
-  res.status(500).json({ error: 'Internal server error', details: err.message });
-});
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
