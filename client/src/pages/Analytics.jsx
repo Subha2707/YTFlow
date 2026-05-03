@@ -28,7 +28,7 @@ export default function Analytics() {
     setError('');
     setData(null);
     try {
-      const res = await API.post('/analytics', { url });
+      const res = await API.post('/api/analytics', { url });
       setData(res.data);
     } catch (err) {
       setError(err.response?.data?.error || 'Failed to fetch data');

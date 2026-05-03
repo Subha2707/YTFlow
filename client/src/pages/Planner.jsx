@@ -24,7 +24,7 @@ export default function Planner() {
     try {
       const payload = { topic };
       if (isCalendarMode) payload.type = 'calendar';
-      const res = await API.post('/generate', payload);
+      const res = await API.post('/api/generate', payload);
       if (isCalendarMode) {
         setCalendar(res.data.calendar);
       } else {
@@ -42,7 +42,7 @@ export default function Planner() {
     const contentToSave = isCalendarMode ? { calendar } : generated;
     if (!contentToSave || (isCalendarMode && !calendar) || (!isCalendarMode && !generated)) return;
     try {
-      await API.post('/plans', { topic, generatedContent: contentToSave });
+      await API.post('/api/plans', { topic, generatedContent: contentToSave });
       setSaveSuccess(true);
     // eslint-disable-next-line no-unused-vars
     } catch (err) {

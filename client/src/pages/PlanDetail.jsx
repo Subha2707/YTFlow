@@ -17,7 +17,7 @@ export default function PlanDetail() {
   useEffect(() => {
     const fetchPlan = async () => {
       try {
-        const res = await API.get(`/plans/${id}`); // we need to add a GET single plan route on backend
+        const res = await API.get(`/api/plans/${id}`); // we need to add a GET single plan route on backend
         setPlan(res.data);
       // eslint-disable-next-line no-unused-vars
       } catch (err) {

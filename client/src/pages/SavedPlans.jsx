@@ -15,7 +15,7 @@ export default function SavedPlans() {
 
   const fetchPlans = async () => {
     try {
-      const res = await API.get('/plans');
+      const res = await API.get('/api/plans');
       setPlans(res.data);
     } catch (err) {
       console.error(err);
@@ -25,7 +25,7 @@ export default function SavedPlans() {
   const handleDelete = async (id) => {
     if (!window.confirm('Delete this plan?')) return;
     try {
-      await API.delete(`/plans/${id}`);
+      await API.delete(`/api/plans/${id}`);
       setPlans(plans.filter(plan => plan._id !== id));
     // eslint-disable-next-line no-unused-vars
     } catch (err) {
