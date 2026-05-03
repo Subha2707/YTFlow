@@ -1,11 +1,14 @@
 import { Link } from 'react-router-dom';
+import { FaBrain, FaRocket } from "react-icons/fa";
+import { MdAutoGraph, MdCalendarMonth } from 'react-icons/md';
+
 
 export default function Home() {
   return (
     <div className="page-transition">
       {/* Hero Section */}
       <section className="hero">
-        <span className="hero-badge">🚀 AI-Powered Growth</span>
+        <span className="hero-badge"><FaRocket/> AI-Powered Growth</span>
         <h1>
           YouTube Strategy <br /> & Content Planner
         </h1>
@@ -29,7 +32,7 @@ export default function Home() {
         <h2 className="neon-text">Why creators love us</h2>
         <div className="features-grid">
           <div className="glass-card feature-card">
-            <span className="feature-icon">🧠</span>
+            <span className="feature-icon"><FaBrain/></span>
             <h3>AI Idea Engine</h3>
             <p>
               Never run out of content. Enter a topic and get fresh, 
@@ -37,7 +40,7 @@ export default function Home() {
             </p>
           </div>
           <div className="glass-card feature-card">
-            <span className="feature-icon">📈</span>
+            <span className="feature-icon"><MdAutoGraph/></span>
             <h3>SEO Supercharge</h3>
             <p>
               Generate killer titles, tags, and descriptions that 
@@ -45,7 +48,7 @@ export default function Home() {
             </p>
           </div>
           <div className="glass-card feature-card">
-            <span className="feature-icon">📅</span>
+            <span className="feature-icon"><MdCalendarMonth/></span>
             <h3>Smart Planner</h3>
             <p>
               Save your generated plans and build a consistent 
