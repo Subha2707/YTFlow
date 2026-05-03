@@ -205,10 +205,17 @@ export default function Analytics() {
           <div className="chart-section">
             <GlassCard>
               <h4>Views / Likes / Comments</h4>
-              <ResponsiveContainer width="100%" height={300}>
+              <ResponsiveContainer width="100%" height={250}>
                 <BarChart data={[{ name: 'Video', Views: data.views, Likes: data.likes, Comments: data.comments }]}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#333" />
-                  <XAxis dataKey="name" stroke="#aaa" />
+                  <XAxis 
+                    dataKey="name" 
+                    stroke="#aaa"
+                    interval={0}
+                    angle={-30}
+                    textAnchor='end'
+                    height={70}
+                  />
                   <YAxis stroke="#aaa" />
                   // eslint-disable-next-line react-hooks/static-components, react-hooks/static-components, react-hooks/static-components, react-hooks/static-components
                   <Tooltip content={<CustomTooltip />} />

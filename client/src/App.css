@@ -1859,11 +1859,13 @@ button:hover svg {
   .analytics-input-wrap {
     flex-direction: column;
     align-items: stretch;
+    gap:12px
   }
 
   .analytics-input-actions {
+    display: flex;
     width: 100%;
-    justify-content: space-between;
+    gap: 10px;
   }
 
   .analytics-input-actions button {
@@ -1871,15 +1873,40 @@ button:hover svg {
   }
 
   .mini-stats-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr !important;
   }
 
   .video-meta h3 {
     font-size: 1.1rem;
   }
 
-  .video-meta {
+  .video-summary-card {
+    flex-direction: column !important;
+    align-items: center;
     text-align: center;
+  }
+
+  .video-meta {
+    width: 100%;
+  }
+
+  .video-thumb {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .chart-section {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .chart-section .glass-card {
+    padding: 16px;
+  }
+
+  .recharts-wrapper {
+    font-size: 10px !important;
   }
 }
 
@@ -1896,5 +1923,16 @@ button:hover svg {
 
   .mini-stat h2 {
     font-size: 1.5rem;
+  }
+  .analytics-page {
+    padding: 0 12px;
+  }
+
+  .glass-card {
+    padding: 16px;
+  }
+
+  .video-meta h3 {
+    font-size: 1rem;
   }
 }
