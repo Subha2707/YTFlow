@@ -3,6 +3,9 @@ import API from '../api';
 // eslint-disable-next-line no-unused-vars
 import GlassCard from '../components/Card';
 import Loader from '../components/Loader';
+import { FaCalendarAlt, FaLightbulb, FaTag } from "react-icons/fa";
+import { MdSubtitles, MdDescription } from "react-icons/md";
+
 
 export default function Planner() {
   const [topic, setTopic] = useState('');
@@ -76,7 +79,7 @@ export default function Planner() {
       {/* Calendar Output */}
       {calendar && isCalendarMode && (
         <div className="calendar-container glass-card">
-          <h3 className="neon-text">📅 7‑Day YouTube Content Calendar</h3>
+          <h3 className="neon-text"><FaCalendarAlt/>7‑Day YouTube Content Calendar</h3>
           <div className="calendar-grid">
             {calendar.map((day, idx) => (
               <div key={idx} className="calendar-day-card">
@@ -103,7 +106,7 @@ export default function Planner() {
       {generated && !isCalendarMode && (
         <div className="results-container glass-card">
           <div className="result-section">
-            <h3>💡 Video Ideas</h3>
+            <h3><FaLightbulb/> Video Ideas</h3>
             <ul>
               {generated.ideas.map((idea, idx) => (
                 <li key={idx}>{idea}</li>
@@ -111,7 +114,7 @@ export default function Planner() {
             </ul>
           </div>
           <div className="result-section">
-            <h3>📝 Titles</h3>
+            <h3><MdSubtitles/> Titles</h3>
             <ul>
               {generated.titles.map((title, idx) => (
                 <li key={idx}>{title}</li>
@@ -119,7 +122,7 @@ export default function Planner() {
             </ul>
           </div>
           <div className="result-section">
-            <h3>🏷️ Tags</h3>
+            <h3><FaTag/> Tags</h3>
             <div className="tags">
               {generated.tags.map((tag, idx) => (
                 <span className="tag" key={idx}>{tag}</span>
@@ -127,7 +130,7 @@ export default function Planner() {
             </div>
           </div>
           <div className="result-section">
-            <h3>📄 Description</h3>
+            <h3><MdDescription/> Description</h3>
             <p>{generated.description}</p>
           </div>
           <button onClick={handleSave} className="neon-btn">
