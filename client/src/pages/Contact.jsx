@@ -75,7 +75,7 @@ export default function Contact() {
           <GlassCard className="contact-info-card">
             <div className="contact-info-icon neon-text-alt"><FiMapPin size={24} /></div>
             <h4>Location</h4>
-            <p>Bangalore, India</p>
+            <p>Kolkata, India</p>
             <p className="contact-sub">Remote team, global reach</p>
           </GlassCard>
 
