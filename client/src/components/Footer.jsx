@@ -48,10 +48,10 @@ export default function Footer() {
         <div className="footer-section">
           <h4 className="footer-heading">Resources</h4>
           <ul className="footer-links">
-            <li><a href="#features">Features</a></li>
-            <li><a href="#how-it-works">How It Works</a></li>
-            <li><a href="#blog">Blog</a></li>
-            <li><a href="#tutorials">Tutorials</a></li>
+            <li><a href="/features">Features</a></li>
+            <li><a href="/how-it-works">How It Works</a></li>
+            <li><a href="/blog">Blog</a></li>
+            <li><a href="/tutorials">Tutorials</a></li>
           </ul>
         </div>
 
@@ -60,9 +60,9 @@ export default function Footer() {
           <h4 className="footer-heading">Support</h4>
           <ul className="footer-links">
             <li><Link to="/contact">Contact Us</Link></li>
-            <li><a href="#faq">FAQ</a></li>
-            <li><a href="#privacy">Privacy Policy</a></li>
-            <li><a href="#terms">Terms of Service</a></li>
+            <li><a href="/faq">FAQ</a></li>
+            <li><a href="/privacy">Privacy Policy</a></li>
+            <li><a href="/terms">Terms of Service</a></li>
             <li>
               <a href="mailto:support@ytflow.com" className="email-link">
                 <FiMail style={{ marginRight: 6 }} />
