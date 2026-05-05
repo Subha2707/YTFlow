@@ -1936,3 +1936,62 @@ button:hover svg {
     font-size: 1rem;
   }
 }
+
+/* ========== Legal Pages (Privacy & Terms) ========== */
+.legal-page {
+  max-width: 850px;
+  margin: 0 auto;
+  padding: 40px 24px 80px;
+}
+
+.legal-intro {
+  text-align: center;
+  margin-bottom: 40px;
+  padding: 28px 32px;
+}
+
+.legal-intro p {
+  color: #b0b0b0;
+  font-size: 1.05rem;
+  line-height: 1.7;
+}
+
+.legal-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.legal-card {
+  padding: 32px;
+}
+
+.legal-card h3 {
+  font-size: 1.2rem;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #e0e0e0;
+}
+
+.legal-content p {
+  color: #a0a0b0;
+  font-size: 0.95rem;
+  line-height: 1.8;
+  margin-bottom: 16px;
+}
+
+.legal-content p:last-child {
+  margin-bottom: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .legal-card {
+    padding: 24px 20px;
+  }
+  .legal-card h3 {
+    font-size: 1.05rem;
+  }
+}
