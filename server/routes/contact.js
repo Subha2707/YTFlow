@@ -4,10 +4,20 @@ const router = express.Router();
 
 // Email transporter – uses Gmail SMTP
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  host: 'smtp.gmail.com',
+  port: 465,
+  secure: true,
   auth: {
-    user: process.env.EMAIL_USER,        // your Gmail address
-    pass: process.env.EMAIL_APP_PASSWORD // Gmail App Password (NOT your normal password)
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_APP_PASSWORD
+  }
+});
+
+transporter.verify((error, success) => {
+  if (error) {
+    console.log('SMTP ERROR:', error);
+  } else {
+    console.log('SMTP READY');
   }
 });
 
