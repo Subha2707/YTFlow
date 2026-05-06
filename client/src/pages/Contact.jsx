@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import GlassCard from '../components/Card';
 import { FiMail, FiMapPin, FiPhone, FiSend, FiClock } from 'react-icons/fi';
-import API from '../api';
 
 export default function Contact() {
   const [name, setName] = useState('');
@@ -9,19 +8,15 @@ export default function Contact() {
   const [message, setMessage] = useState('');
   const [sent, setSent] = useState(false);
 
-  const handleSubmit = async(e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     
-    try{
-      await API.post('/contact',{name, email, message});
-      setSent(true);
-      setName('');
-      setEmail('');
-      setMessage('');
-      setTimeout(()=> setSent(false),4000);
-    }catch(err){
-      alert(err.response?.data?.error || 'Failed to send message. Please try again.');
-    }
+    console.log({ name, email, message });
+    setSent(true);
+    setName('');
+    setEmail('');
+    setMessage('');
+    setTimeout(() => setSent(false), 3000);
   };
 
   return (
