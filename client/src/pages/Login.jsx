@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import API from '../api';
 
@@ -6,6 +6,15 @@ export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      alert("You're already logged in!");
+      navigate('/dashboard');
+    }
+  }, [navigate]);
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
