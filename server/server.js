@@ -17,7 +17,13 @@ app.use(cors({
   credentials: true
 }));
 
-app.options('*', cors());
+app.use(cors({
+  origin: [
+    'https://ytflow-app.netlify.app',
+    'http://localhost:5173'
+  ],
+  credentials: true,
+}));
 
 app.use(express.json());
 

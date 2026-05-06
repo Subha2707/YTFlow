@@ -1,54 +1,90 @@
 const express = require('express');
 const nodemailer = require('nodemailer');
+
 const router = express.Router();
 
-// Email transporter – uses Gmail SMTP
+// Create transporter
 const transporter = nodemailer.createTransport({
   host: 'smtp.gmail.com',
   port: 465,
   secure: true,
   auth: {
     user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_APP_PASSWORD
-  }
+    pass: process.env.EMAIL_APP_PASSWORD,
+  },
+
+  tls: {
+    rejectUnauthorized: false,
+  },
+
+  connectionTimeout: 10000,
+  greetingTimeout: 10000,
+  socketTimeout: 10000,
+
+  family: 4, // force IPv4
 });
 
+// Verify SMTP connection
 transporter.verify((error, success) => {
   if (error) {
-    console.log('SMTP ERROR:', error);
+    console.error('SMTP VERIFY ERROR:', error);
   } else {
-    console.log('SMTP READY');
+    console.log('SMTP SERVER READY');
   }
 });
 
 // POST /api/contact
 router.post('/', async (req, res) => {
-  const { name, email, message } = req.body;
-
-  if (!name || !email || !message) {
-    return res.status(400).json({ error: 'All fields are required' });
-  }
-
-  const mailOptions = {
-    from: `"YTFlow Contact" <${process.env.EMAIL_USER}>`,
-    to: process.env.EMAIL_USER,          // sends to yourself
-    replyTo: email,                      // so you can reply directly to the sender
-    subject: `New Contact Form Message from ${name}`,
-    html: `
-      <h2>New Contact Form Submission</h2>
-      <p><strong>Name:</strong> ${name}</p>
-      <p><strong>Email:</strong> ${email}</p>
-      <p><strong>Message:</strong></p>
-      <p>${message.replace(/\n/g, '<br/>')}</p>
-    `
-  };
-
   try {
-    await transporter.sendMail(mailOptions);
-    res.json({ message: 'Message sent successfully!' });
+    const { name, email, message } = req.body;
+
+    // Validation
+    if (!name || !email || !message) {
+      return res.status(400).json({
+        error: 'All fields are required',
+      });
+    }
+
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: process.env.EMAIL_USER,
+      replyTo: email,
+      subject: `New Contact Message from ${name}`,
+
+      html: `
+        <div style="font-family: Arial, sans-serif;">
+          <h2>New Contact Form Submission</h2>
+
+          <p><strong>Name:</strong> ${name}</p>
+
+          <p><strong>Email:</strong> ${email}</p>
+
+          <p><strong>Message:</strong></p>
+
+          <div>
+            ${message.replace(/\n/g, '<br/>')}
+          </div>
+        </div>
+      `,
+    };
+
+    // Send email
+    const info = await transporter.sendMail(mailOptions);
+
+    console.log('EMAIL SENT:', info.messageId);
+
+    return res.status(200).json({
+      success: true,
+      message: 'Message sent successfully',
+    });
+
   } catch (err) {
-    console.error('Email send error:', err);
-    res.status(500).json({ error: 'Failed to send message. Please try again later.' });
+    console.error('CONTACT ROUTE ERROR:', err);
+
+    return res.status(500).json({
+      success: false,
+      error: 'Failed to send message',
+    });
   }
 });
 
