@@ -7,6 +7,7 @@ const authRoutes = require('./routes/auth');
 const generateRoutes = require('./routes/generate');
 const plansRoutes = require('./routes/plans');
 const analyticsRoutes = require('./routes/analytics');
+const contactRoutes = require('./routes/contact');
 
 const app = express();
 
@@ -35,6 +36,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/generate', generateRoutes);
 app.use('/api/plans', plansRoutes);
 app.use('/api/analytics', analyticsRoutes);
+app.use('./api/contact', contactRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
