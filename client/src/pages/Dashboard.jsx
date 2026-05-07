@@ -14,14 +14,14 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const userRes = await API.get('/api/auth/me');
+        const userRes = await API.get('/auth/me');
         setUsername(userRes.data.username || userRes.data.email); // fallback
       } catch (err) {
         console.error('Failed to fetch user', err);
       }
 
       try {
-        const plansRes = await API.get('/api/plans');
+        const plansRes = await API.get('/plans');
         setPlans(plansRes.data);
       } catch (err) {
         console.error(err);

@@ -25,7 +25,7 @@ export default function SavedPlans() {
   const handleDelete = async (id) => {
     if (!window.confirm('Delete this plan?')) return;
     try {
-      await API.delete(`/api/plans/${id}`);
+      await API.delete(`/plans/${id}`);
       setPlans(plans.filter(plan => plan._id !== id));
     // eslint-disable-next-line no-unused-vars
     } catch (err) {
