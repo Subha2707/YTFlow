@@ -21,7 +21,7 @@ export default function Register() {
     e.preventDefault();
     if (!username.trim()) return alert('Username is required');
     try {
-      await API.post('/api/auth/register', { email, password, username });
+      await API.post('/auth/register', { email, password, username });
       alert('Registration successful! Please login.');
       navigate('/login');
     } catch (err) {
