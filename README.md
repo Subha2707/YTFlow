@@ -102,7 +102,18 @@ ytflow/
 │   │   │   ├── Register.jsx
 │   │   │   ├── Dashboard.jsx
 │   │   │   ├── Planner.jsx
-│   │   │   └── SavedPlans.jsx
+│   │   │   ├── SavedPlans.jsx
+│   │   │   ├── PlanDetails.jsx
+│   │   │   ├── Analytics.jsx
+│   │   │   ├── Features.jsx
+│   │   │   ├── HowItWorks.jsx
+│   │   │   ├── Blog.jsx
+│   │   │   ├── BlogDetail.jsx
+│   │   │   ├── Tutorial.jsx
+│   │   │   ├── FAQ.jsx
+│   │   │   ├── Contact.jsx
+│   │   │   ├── Privacy.jsx
+│   │   │   └── Terms.jsx
 │   │   ├── App.jsx
 │   │   ├── App.css                 # All styles — glassmorphism, neon, responsive
 │   │   ├── api.js                  # Axios instance with JWT interceptor
