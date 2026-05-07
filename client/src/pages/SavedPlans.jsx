@@ -15,7 +15,7 @@ export default function SavedPlans() {
 
   const fetchPlans = async () => {
     try {
-      const res = await API.get('/api/plans');
+      const res = await API.get('/plans');
       setPlans(res.data);
     } catch (err) {
       console.error(err);
